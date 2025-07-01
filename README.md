@@ -1,0 +1,1 @@
+ссылка на видео: https://disk.yandex.ru/i/Z_2cKtvbTm8p6A
