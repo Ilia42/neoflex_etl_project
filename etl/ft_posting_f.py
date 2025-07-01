@@ -17,27 +17,20 @@ def load_ft_posting_f(csv_path, conn_params):
     conn = psycopg2.connect(**conn_params)
     cur = conn.cursor()
 
-    # Лог - старт
     cur.execute("CALL logs.write_log('ds.load_ft_posting_f', 'start', NULL, NULL, 'Начало загрузки FT_POSTING_F')")
 
     try:
-        # Загружаем CSV как строки
         df = pd.read_csv(csv_path, dtype=str, sep=';')
 
-        # Преобразуем дату операции
         df = parse_multiple_dates(df, ['OPER_DATE'])
 
-        # TRUNCATE — быстрее и чище
         cur.execute("TRUNCATE ds.ft_posting_f")
 
-        # Буфер в память
-        # Заменяем NaN на None
         df = df.where(pd.notna(df), None)
         buffer = StringIO()
         df.to_csv(buffer, index=False, header=False)
         buffer.seek(0)
 
-        # COPY (замени список колонок под свою структуру)
         cur.copy_expert("""
             COPY ds.ft_posting_f (
                 oper_date,
@@ -48,7 +41,6 @@ def load_ft_posting_f(csv_path, conn_params):
             ) FROM STDIN WITH CSV
         """, buffer)
 
-        # Лог - завершение
         cur.execute("CALL logs.write_log('ds.load_ft_posting_f', 'finish', NULL, NULL, 'Конец загрузки FT_POSTING_F')")
         conn.commit()
 
@@ -70,4 +62,4 @@ conn_params = {
     'password': 'ilia2004'
 }
 
-load_ft_posting_f('/Users/iladuro/Desktop/файлы (1)/ft_posting_f.csv', conn_params)
+load_ft_posting_f('/Users/iladuro/Desktop/etl_project/data/ft_posting_f.csv', conn_params)

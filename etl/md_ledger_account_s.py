@@ -24,10 +24,8 @@ def load_md_ledger_account_s(csv_path, conn_params):
 
         df = parse_multiple_dates(df, ['START_DATE', 'END_DATE'])
 
-        # Преобразуем NaN в None для PostgreSQL
         df = df.where(pd.notna(df), None)
 
-        # Список всех колонок, которые ожидаются в базе
         db_columns = [
             'chapter', 'chapter_name', 'section_number', 'section_name',
             'subsection_name', 'ledger1_account', 'ledger1_account_name',
@@ -39,10 +37,8 @@ def load_md_ledger_account_s(csv_path, conn_params):
             'max_term', 'max_term_measure', 'ledger_acc_full_name_translit',
             'is_revaluation', 'is_correct'
         ]
-        # Приводим имена колонок в датафрейме к нижнему регистру
         df.columns = [col.lower() for col in df.columns]
         for _, row in df.iterrows():
-            # Для отсутствующих колонок подставляем None
             values = [None if col not in df.columns else (None if pd.isna(row[col]) else row[col]) for col in db_columns]
             cur.execute(f"""
                 INSERT INTO ds.md_ledger_account_s (
@@ -74,4 +70,4 @@ conn_params = {
     'password': 'ilia2004'
 }
 
-load_md_ledger_account_s('/Users/iladuro/Desktop/файлы (1)/md_ledger_account_s.csv', conn_params)
+load_md_ledger_account_s('/Users/iladuro/Desktop/etl_project/data/md_ledger_account_s.csv', conn_params)

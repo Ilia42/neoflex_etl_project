@@ -24,7 +24,6 @@ def load_md_account_d(csv_path, conn_params):
         df.columns = [col.lower() for col in df.columns]
         df = parse_multiple_dates(df, ['data_actual_date', 'data_actual_end_date'])
 
-        # Перебираем строки и выполняем UPSERT
         for _, row in df.iterrows():
             cur.execute("""
                 INSERT INTO ds.md_account_d (
@@ -60,4 +59,4 @@ conn_params = {
     'password': 'ilia2004'
 }
 
-load_md_account_d('/Users/iladuro/Desktop/файлы (1)/md_account_d.csv', conn_params)
+load_md_account_d('/Users/iladuro/Desktop/etl_project/data/md_account_d.csv', conn_params)

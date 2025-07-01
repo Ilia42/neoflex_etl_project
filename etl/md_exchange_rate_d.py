@@ -17,19 +17,14 @@ def load_md_exchange_rate_d(csv_path, conn_params):
     conn = psycopg2.connect(**conn_params)
     cur = conn.cursor()
 
-    # Лог: начало
     cur.execute("CALL logs.write_log('ds.load_md_exchange_rate_d', 'start', NULL, NULL, 'Начало загрузки MD_EXCHANGE_RATE_D')")
 
     try:
-        # Чтение CSV
         df = pd.read_csv(csv_path, dtype=str, sep=';')
 
-        # Парсинг дат
         df = parse_multiple_dates(df, ['DATA_ACTUAL_DATE', 'DATA_ACTUAL_END_DATE'])
 
-        # Обход строк
         for _, row in df.iterrows():
-            # Заменяем NaN на None
             values = [None if pd.isna(x) else x for x in row]
             cur.execute("""
                 INSERT INTO ds.md_exchange_rate_d (
@@ -46,7 +41,6 @@ def load_md_exchange_rate_d(csv_path, conn_params):
                     code_iso_num = EXCLUDED.code_iso_num
             """, values)
 
-        # Лог: конец
         cur.execute("CALL logs.write_log('ds.load_md_exchange_rate_d', 'finish', NULL, NULL, 'Конец загрузки MD_EXCHANGE_RATE_D')")
         conn.commit()
 
@@ -68,6 +62,6 @@ conn_params = {
     'password': 'ilia2004'
 }
 
-load_md_exchange_rate_d('/Users/iladuro/Desktop/файлы (1)/md_exchange_rate_d.csv', conn_params)
+load_md_exchange_rate_d('/Users/iladuro/Desktop/etl_project/data/md_exchange_rate_d.csv', conn_params)
 
 
