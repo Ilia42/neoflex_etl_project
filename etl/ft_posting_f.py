@@ -1,6 +1,7 @@
 import pandas as pd
 import psycopg2
 from io import StringIO
+import time
 
 def parse_multiple_dates(df, date_columns):
     for col in date_columns:
@@ -18,6 +19,8 @@ def load_ft_posting_f(csv_path, conn_params):
     cur = conn.cursor()
 
     cur.execute("CALL logs.write_log('ds.load_ft_posting_f', 'start', NULL, NULL, 'Начало загрузки FT_POSTING_F')")
+    conn.commit()
+    time.sleep(5)
 
     try:
         df = pd.read_csv(csv_path, dtype=str, sep=';')

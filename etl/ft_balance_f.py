@@ -1,6 +1,7 @@
 import pandas as pd
 import psycopg2
 from io import StringIO
+import time
 
 def parse_date_column(df, col_name):
     for fmt in ("%d.%m.%Y", "%Y-%m-%d", "%m/%d/%Y"):
@@ -17,6 +18,8 @@ def load_ft_balance_f(csv_path, conn_params):
     cur = conn.cursor()
 
     cur.execute("CALL logs.write_log('ds.load_ft_balance_f', 'start', NULL, NULL, 'Начало загрузки FT_BALANCE_F')")
+    conn.commit()
+    time.sleep(5)
 
     try:
         df = pd.read_csv(csv_path, dtype=str, sep=';')
